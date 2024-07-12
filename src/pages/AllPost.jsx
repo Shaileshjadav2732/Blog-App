@@ -6,11 +6,11 @@ import Postcard from "../components/Postcard.jsx";
 function AllPost() {
   const [posts, setPosts] = useState([]);
   useEffect(() => {
-    // Fetch posts when the component mounts
-    appwriteService.getPost().then((posts) => {
+    // Fetch posts when the component mounts  
+    appwriteService.getPosts().then((posts) => {
       if (posts) {
-        setPosts(posts.documents);  
-      }
+        setPosts(posts);  
+      } 
     });
   }, []);// Empty dependency array means this effect runs only once when the component mounts
 

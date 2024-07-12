@@ -1,11 +1,13 @@
 import React from 'react'
 
-function Logo({width="100px"}) {
+function Logo() {
   return (
-    <div>
-      Logo
+    <div className='text-3xl text-blue-700'>
+      
+     AM
+     
     </div>
-  )
+  );
 }
 
 export default Logo

@@ -3,11 +3,10 @@ import { Container, Logo, LogoutBtn } from "../index.js";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
- 
+
 function Header() {
   // Accessing authentication status from Redux state
-  const authStatus = useSelector((state) => (state.auth.status));
-  console.log(authStatus); // Logging authentication status for debugging
+  const authStatus = useSelector((state) => state.auth.status);
   const navigate = useNavigate();
 
   // Navigation items based on authentication status
@@ -27,7 +26,6 @@ function Header() {
       slug: "/signup",
       active: !authStatus, // Active if user is not authenticated
     },
-
     {
       name: "All Posts",
       slug: "/all-posts",
@@ -41,21 +39,21 @@ function Header() {
   ];
 
   return (
-    <header className="py-3 shadow bg-gray-500">
+    <header className="bg-white shadow-md">
       <Container>
-        <nav className="flex">
-          <div className="mr-4">
-            <Link to="/">
-              <Logo width="70px" />
+        <nav className="flex items-center justify-between py-4">
+          <div className="flex items-center">
+            <Link to="/" className="text-xl font-bold text-gray-800">
+              <Logo />
             </Link>
           </div>
-          <ul className="flex ml-auto">
+          <ul className="flex items-center space-x-4">
             {navItems.map((item) =>
               item.active ? (
                 <li key={item.name}>
                   <button
                     onClick={() => navigate(item.slug)}
-                    className="inline-block px-6 py-2 duration-200 hover:bg-blue-100 rounded-full"
+                    className="px-4 py-2 text-sm font-medium text-gray-700 transition duration-200 ease-in-out rounded-md hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
                     {item.name}
                   </button>
@@ -72,7 +70,7 @@ function Header() {
         </nav>
       </Container>
     </header>
-  )
+  );
 }
 
 export default Header;

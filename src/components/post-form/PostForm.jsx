@@ -1,60 +1,68 @@
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Input, Select, RTE } from "../index.js";
+import { Button, Input, RTE, Select } from "..";
 import appwriteService from "../../appwrite/conf.js";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from  "react-redux";
+import { useSelector } from "react-redux";
 
 export default function PostForm({ post }) {
   const { register, handleSubmit, watch, setValue, control, getValues } =
     useForm({
       defaultValues: {
-        title: post?.title || "", // check the post is update or new post
-        slug: post?.slug || "",
+        title: post?.title || "",
+        slug: post?.$id || "",
         content: post?.content || "",
         status: post?.status || "active",
       },
     });
+
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
 
   const submit = async (data) => {
-    
     if (post) {
-      const file = (await data.image[0])
+      const file = data.image[0]
         ? await appwriteService.uploadFile(data.image[0])
         : null;
+
       if (file) {
-        await appwriteService.deleteFile(post.featuredImage);
+        appwriteService.deleteFile(post.featuredImage);
       }
+
       const dbPost = await appwriteService.updatePost(post.$id, {
         ...data,
         featuredImage: file ? file.$id : undefined,
       });
+
       if (dbPost) {
         navigate(`/post/${dbPost.$id}`);
       }
     } else {
-      const file = await appwriteService.uploadFile(data.image[0]); // <- Here you declare 'file'
+      const file = await appwriteService.uploadFile(data.image[0]);
+
       if (file) {
-        const file = file.$id; // <- Here you attempt to redeclare 'file'
-        data.featuredImage = file;
-        await appwriteService.createPost({
+        const fileId = file.$id;
+        data.featuredImage = fileId;
+        const dbPost = await appwriteService.createPost({
           ...data,
           userId: userData.$id,
         });
-      } 
+
+        if (dbPost) {
+          navigate(`/post/${dbPost.$id}`);
+        }
+      }
     }
-  }
+  };
 
   const slugTransform = useCallback((value) => {
-    if (value && typeof value === "string") {
+    if (value && typeof value === "string")
       return value
         .trim()
         .toLowerCase()
-        .replace(/[^\w\s]+/g, "-") // Changed the regex to match non-alphanumeric characters
-        .replace(/\s+/g, "-"); // Simplified the regex to replace multiple spaces with a single dash
-    }
+        .replace(/[^a-zA-Z\d\s]+/g, "-")
+        .replace(/\s/g, "-");
+
     return "";
   }, []);
 
@@ -129,12 +137,3 @@ export default function PostForm({ post }) {
     </form>
   );
 }
-
-
-
-
-
-// const str = "Hello   World";
-// const replacedStr = str.replace(/\s/g, "-");
-
-// console.log(replacedStr); // Output: "Hello---World"
